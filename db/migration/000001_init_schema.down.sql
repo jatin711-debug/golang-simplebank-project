@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS enteries;
+DROP TABLE IF EXISTS entries;
 
 DROP TABLE IF EXISTS transfers;
 
