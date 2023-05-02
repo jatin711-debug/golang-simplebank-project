@@ -10,5 +10,7 @@ migratedown:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down
 sqlc:
 	docker run --rm -v "%cd%:/src" -w /src kjconroy/sqlc generate
+test_main:
+	go test github.com.jatin711-debug/simplebank/db/sqlc -run ^TestMain$
 
-.PHONY: dropdb createdb postgres migrateup migratedown sqlc
+.PHONY: dropdb createdb postgres migrateup migratedown sqlc test_main
