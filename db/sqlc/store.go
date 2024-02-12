@@ -14,7 +14,7 @@ type Store struct {
 type TransferTxParams struct {
 	FromAccounId int64 `json:"from_account_id"`
 	ToAccountId  int64 `json:"to_account_id"`
-	Amount       int64 `json:amount`
+	Amount       int64 `json:"amount"`
 }
 
 type TransferTxResult struct {
@@ -50,7 +50,7 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 }
 
 func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
-	result := TransferTxResult{}
+	var result TransferTxResult 
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
 		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
@@ -66,6 +66,7 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 			AccountID: arg.FromAccounId,
 			Amount:    -arg.Amount,
 		})
+
 		if err != nil {
 			return err
 		}

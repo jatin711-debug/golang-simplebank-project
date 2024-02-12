@@ -1,7 +1,7 @@
 postgres:
-	docker run --name postgres12 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -p 5432:5432 -d postgres:12-alpine	
+	docker run --name postgres-container -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -p 5432:5432 -d postgres:12-alpine	
 createdb:
-	docker exec -it postgres12 createdb --username=root --owner=root simple_bank
+	docker exec -it postgres-container createdb --username=root --owner=root simple_bank
 dropdb: 
 	docker exec -it postgres12 dropdb simple_bank
 migrateup:
@@ -9,8 +9,8 @@ migrateup:
 migratedown:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down
 sqlc:
-	docker run --rm -v "%cd%:/src" -w /src kjconroy/sqlc generate
+	docker run --rm -v "%cd%:/src" -w /src sqlc/sqlc generate
 test_main:
-	go test github.com.jatin711-debug/simplebank/db/sqlc -run ^TestMain$
+	go test -v -cover ./...
 
 .PHONY: dropdb createdb postgres migrateup migratedown sqlc test_main
