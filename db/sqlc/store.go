@@ -12,7 +12,7 @@ type Store struct {
 }
 
 type TransferTxParams struct {
-	FromAccounId int64 `json:"from_account_id"`
+	FromAccountId int64 `json:"from_account_id"`
 	ToAccountId  int64 `json:"to_account_id"`
 	Amount       int64 `json:"amount"`
 }
@@ -49,12 +49,14 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 	return tx.Commit()
 }
 
+// TransferTx performs a money transfer from one account to the other.
+// It creates a transfer record, add account entries, and update accounts' balance within a single database transaction.
 func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult 
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
 		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
-			FromAccountID: arg.FromAccounId,
+			FromAccountID: arg.FromAccountId,
 			ToAccountID:   arg.ToAccountId,
 			Amount:        arg.Amount,
 		})
@@ -63,7 +65,7 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 		}
 
 		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
-			AccountID: arg.FromAccounId,
+			AccountID: arg.FromAccountId,
 			Amount:    -arg.Amount,
 		})
 
@@ -78,6 +80,8 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 		if err != nil {
 			return err
 		}
+
+		// TODO: update account balance
 
 		return nil
 	})
